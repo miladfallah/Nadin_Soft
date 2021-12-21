@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const User = require("../models/User");
+const {User} = require("../models/tables");
 const bcrypt = require("bcryptjs");
 const { sendEmail } = require("../utils/mailer");
 
@@ -9,27 +9,23 @@ exports.handleLogin = async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await (await User.findOne({
+            where: {email: req.body.email}
+        }));
         if (!user) {
             const error = new Error("کاربری با این ایمیل یافت نشد");
             error.statusCode = 404;
             throw error;
         }
 
-        const isEqual = await bcrypt.compare(password, user.password);
-
-        if (isEqual) {
+        if (password === user.password) {
             const token = jwt.sign(
                 {
-                    user: {
-                        userId: user._id.toString(),
-                        email: user.email,
-                        fullname: user.fullname,
-                    },
+                     user: user.email
                 },
                 process.env.JWT_SECRET
             );
-            res.status(200).json({ token, userId: user._id.toString() });
+            res.status(200).json({ token, email: user.email });
         } else {
             const error = new Error("آدرس ایمیل یا کلمه عبور اشتباه است");
             error.statusCode = 422;
@@ -42,10 +38,10 @@ exports.handleLogin = async (req, res, next) => {
 
 exports.createUser = async (req, res, next) => {
     try {
-        await User.userValidation(req.body);
+        // await User.validate(req.body);
         const { fullname, email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ where: {email: req.body.email}});
         if (user) {
             const error = new Error(
                 "کاربری با این ایمیل در پایگاه داده موجود است"
@@ -65,7 +61,7 @@ exports.handleForgetPassword = async (req, res, next) => {
     const { email } = req.body;
 
     try {
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({where: {email: req.body.email}});
 
         if (!user) {
             const error = new Error("کاربری با ایمیل در پایگاه داده ثبت نشده");
@@ -73,7 +69,7 @@ exports.handleForgetPassword = async (req, res, next) => {
             throw error;
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, {
             expiresIn: "1h",
         });
         const resetLink = `http://localhost:3000/users/reset-password/${token}`;
@@ -108,6 +104,7 @@ exports.handleResetPassword = async (req, res, next) => {
             const error = new Error("شما مجوز این عملیات را ندارید");
             error.statusCode = 401;
             throw error;
+
         }
 
         if (password !== confirmPassword) {
@@ -116,7 +113,7 @@ exports.handleResetPassword = async (req, res, next) => {
             throw error;
         }
 
-        const user = await User.findOne({ _id: decodedToken.userId });
+        const user = await User.findOne({where: {email: decodedToken.email}});
 
         if (!user) {
             const error = new Error(
