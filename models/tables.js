@@ -5,6 +5,11 @@ const sequelize = require("../utils/database");
 
 exports.User = sequelize.define("User", {
     //? Model attributes
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     fullname: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -46,7 +51,7 @@ exports.Task = sequelize.define("Task", {
   },
 
   priority: {
-    type: DataTypes.ENUM('high', 'mediume', 'low'),
+    type: DataTypes.ENUM('high', 'medium', 'low'),
       allowNull: false,
   },
 });

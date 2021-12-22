@@ -1,9 +1,29 @@
 const jwt = require("jsonwebtoken");
 
 const {User} = require("../models/tables");
-const bcrypt = require("bcryptjs");
 const { sendEmail } = require("../utils/mailer");
 
+
+exports.getAccounts = async (req, res, next) => {
+    const page = +req.query.page || 1;
+    const accPerPage = 2;
+
+    try {
+        const numberOfaccounts = await User.findAndCountAll().then(result => result.count);
+
+        const accounts = await User.findAndCountAll({ limit: accPerPage, offset: (page - 1) * accPerPage});
+        res.status(200).json({accounts, currentPage: page,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            hasPreviousPage: page > 1,
+            hasNextPage: accPerPage * page < numberOfaccounts,
+            lastPage: Math.ceil(numberOfaccounts / accPerPage)});
+
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+};
 
 exports.handleLogin = async (req, res, next) => {
     const { email, password } = req.body;
@@ -131,3 +151,40 @@ exports.handleResetPassword = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.editUser = async (req, res, next) => {
+    try {
+        const user = await User.findOne({where: { id: req.params.id }});
+        if(!user) {
+            const error = new Error("کاربری وجود ندارد.");
+            error.statusCode = 422;
+            throw error;
+        }
+        else {
+            const {fullname, email } = req.body;
+            user.fullname = fullname;
+            user.email = email;            
+            await user.save();
+            res.status(200).json({fullname, email, message:"اطلاعات کاربر با موفقیت تغییر کرد." });
+        }
+    } catch (err) {
+        next(err)
+    }
+   }
+
+exports.deleteUser = async(req, res, next) => {
+    try {
+        const user = await User.findOne({where: {email: req.body.email}});
+        if (!user) {
+            const error = new Error("کاربری با این ایمیل یافت نشد");
+            error.statusCode = 404;
+            throw error;
+        }
+            else{
+                user.destroy();
+                res.status(200).json({user, message: "کاربر با موفقیت حذف شد."})
+            }    
+        }
+    catch (err) {
+        next(err); }
+}
