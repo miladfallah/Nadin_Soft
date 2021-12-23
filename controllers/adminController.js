@@ -75,8 +75,9 @@ const {name, priority} = req.body;
             next(err); }
     }
 
-    exports.uploadImage = (req, res) => {
-        const upload = multer({
+    exports.uploadImage = (req, res, next) => {
+        try {
+            const upload = multer({
             limits: { fileSize: 4000000 },
             fileFilter: fileFilter,
         }).single("image");
@@ -85,10 +86,10 @@ const {name, priority} = req.body;
             if (err) {
                 if (err.code === "LIMIT_FILE_SIZE") {
                     return res
-                        .status(400)
-                        .json({message: "حجم عکس ارسالی نباید بیشتر از 4 مگابایت باشد."});
+                        .status(422)
+                        .json({error: "حجم عکس ارسالی نباید بیشتر از 4 مگابایت باشد."});
                 }
-                res.status(400).json({err});
+                res.status(400).json({error: err});
             } else {
                 if (req.file) {
                     const fileName = `${shortId.generate()}_${
@@ -100,13 +101,17 @@ const {name, priority} = req.body;
                         })
                         .toFile(`./public/uploads/${fileName}`)
                         .catch((err) => console.log(err));
-                    res.status(200).json(
-                        `http://localhost:3000/uploads/${fileName}`
+                    res.status(200).json( { image: `http://localhost:3000/uploads/${fileName}` }
+                        
                     );
                 } else {
-                    res.json({message: "جهت آپلود باید عکسی انتخاب کنید"});
+                    res.json({error: "جهت آپلود باید عکسی انتخاب کنید"});
                 }
             }
         });
+        } catch (err) {
+            next(err);
+        }
+        
     };
     
