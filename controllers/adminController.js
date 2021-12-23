@@ -75,38 +75,42 @@ const {name, priority} = req.body;
             next(err); }
     }
 
-    exports.uploadImage = (req, res) => {
-        const upload = multer({
-            limits: { fileSize: 4000000 },
-            fileFilter: fileFilter,
-        }).single("image");
-    
-        upload(req, res, async (err) => {
-            if (err) {
-                if (err.code === "LIMIT_FILE_SIZE") {
-                    return res
-                        .status(400)
-                        .json({message: "حجم عکس ارسالی نباید بیشتر از 4 مگابایت باشد."});
-                }
-                res.status(400).json({err});
-            } else {
-                if (req.file) {
-                    const fileName = `${shortId.generate()}_${
-                        req.file.originalname
-                    }`;
-                    await sharp(req.file.buffer)
-                        .jpeg({
-                            quality: 60,
-                        })
-                        .toFile(`./public/uploads/${fileName}`)
-                        .catch((err) => console.log(err));
-                    res.status(200).json(
-                        `http://localhost:3000/uploads/${fileName}`
-                    );
+    exports.uploadImage = (req, res, next) => {
+        try {
+            const upload = multer({
+                limits: { fileSize: 4000000 },
+                fileFilter: fileFilter,
+            }).single("image");
+        
+            upload(req, res, async (err) => {
+                if (err) {
+                    if (err.code === "LIMIT_FILE_SIZE") {
+                        return res
+                            .status(422)
+                            .json({error: "حجم عکس ارسالی نباید بیشتر از 4 مگابایت باشد."});
+                    }
+                    res.status(400).json({error: err});
                 } else {
-                    res.json({message: "جهت آپلود باید عکسی انتخاب کنید"});
+                    if (req.file) {
+                        const fileName = `${shortId.generate()}_${
+                            req.file.originalname
+                        }`;
+                        await sharp(req.file.buffer)
+                            .jpeg({
+                                quality: 60,
+                            })
+                            .toFile(`./public/uploads/${fileName}`)
+                            .catch((err) => console.log(err));
+                        res.status(200).json( { image: 
+                            `http://localhost:3000/uploads/${fileName}` }
+                        );
+                    } else {
+                        res.json({error: "جهت آپلود باید عکسی انتخاب کنید"});
+                    }
                 }
-            }
-        });
+            });
+        } catch (err) {
+            next(err);
     };
+};
     
