@@ -1,4 +1,8 @@
 const {Task} = require('../models/tables');
+const multer = require("multer");
+const sharp = require("sharp");
+const shortId = require("shortid");
+const { fileFilter } = require("../utils/multer");
 
 
 exports.createTask = async (req, res, next) => {
@@ -70,4 +74,39 @@ const {name, priority} = req.body;
         catch (err) {
             next(err); }
     }
+
+    exports.uploadImage = (req, res) => {
+        const upload = multer({
+            limits: { fileSize: 4000000 },
+            fileFilter: fileFilter,
+        }).single("image");
+    
+        upload(req, res, async (err) => {
+            if (err) {
+                if (err.code === "LIMIT_FILE_SIZE") {
+                    return res
+                        .status(400)
+                        .json({message: "حجم عکس ارسالی نباید بیشتر از 4 مگابایت باشد."});
+                }
+                res.status(400).json({err});
+            } else {
+                if (req.file) {
+                    const fileName = `${shortId.generate()}_${
+                        req.file.originalname
+                    }`;
+                    await sharp(req.file.buffer)
+                        .jpeg({
+                            quality: 60,
+                        })
+                        .toFile(`./public/uploads/${fileName}`)
+                        .catch((err) => console.log(err));
+                    res.status(200).json(
+                        `http://localhost:3000/uploads/${fileName}`
+                    );
+                } else {
+                    res.json({message: "جهت آپلود باید عکسی انتخاب کنید"});
+                }
+            }
+        });
+    };
     

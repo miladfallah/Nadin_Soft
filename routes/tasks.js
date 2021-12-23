@@ -20,4 +20,8 @@ router.post("/edit-task/:id", adminController.editTask);
 // @route   POST /tasks/delete-task
 router.post("/delete-task", adminController.deleteTask);
 
+// @desc   Upload Image
+// @route   POST /tasks/upload-image
+router.post("/upload-image", adminController.uploadImage);
+
 module.exports = router;

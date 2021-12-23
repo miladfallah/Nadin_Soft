@@ -1,3 +1,4 @@
+const path = require("path");
 const dotEnv = require("dotenv");
 const express = require("express");
 const sequelize = require('./utils/database')
@@ -10,9 +11,13 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//* Static Folder
+app.use(express.static(path.join(__dirname, "public")));
+
 //* Routes
 app.use("/users", require("./routes/users"));
 app.use("/tasks", require("./routes/tasks"));
+// app.use("/blog", require("./routes/blog"));
 
 const PORT = process.env.PORT || 3000;
 
