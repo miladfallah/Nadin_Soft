@@ -1,27 +1,28 @@
 const { Router } = require("express");
 
 const adminController = require("../controllers/adminController");
+const { authenticated } = require("../middlewares/auth");
 
 const router = new Router();
 
 //  @ desc  Show Tasks
 //  @ route  GET /tasks/
-router.get("/", adminController.getTasks);
+router.get("/", authenticated, adminController.getTasks);
 
 //  @ desc  Create Tasks
 //  @ route  POST /tasks/creare-task
-router.post("/create-task", adminController.createTask);
+router.post("/create-task", authenticated, adminController.createTask);
 
 //  @ desc  Edit Tasks
 //  @ route  POST tasks/edit-task/:id
-router.post("/edit-task/:id", adminController.editTask);
+router.post("/edit-task/:id", authenticated, adminController.editTask);
 
 // @desc   Delete Task
 // @route   POST /tasks/delete-task
-router.post("/delete-task", adminController.deleteTask);
+router.delete("/delete-task", authenticated, adminController.deleteTask);
 
 // @desc   Upload Image
 // @route   POST /tasks/upload-image
-router.post("/upload-image", adminController.uploadImage);
+router.post("/upload-image", authenticated, adminController.uploadImage);
 
 module.exports = router;

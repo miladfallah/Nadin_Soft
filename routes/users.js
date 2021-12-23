@@ -28,6 +28,6 @@ router.post("/edit-user/:id", userController.editUser);
 
 // @desc   Delete User 
 // @route   POST /users/delete-user
-router.post("/delete-user", userController.deleteUser);
+router.delete("/delete-user", userController.deleteUser);
 
 module.exports = router;
