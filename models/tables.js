@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 
-// const { schema } = require("./secure/userValidation");
 const sequelize = require("../utils/database");
 
 exports.User = sequelize.define("User", {
@@ -25,19 +24,6 @@ exports.User = sequelize.define("User", {
     },
 });
 
-// User.validate = (schema) => async (req, res, next) => {
-//     try {
-//       await schema.validate({
-//         fullname: req.body.fullname,
-//         email: req.body.email,
-//         password: req.body.password,
-//       });
-//       return next();
-//     } catch (err) {
-//       return res.status(500).json({ type: err.name, message: err.message });
-//     }
-//   };
-
 exports.Task = sequelize.define("Task", {
     id: {
         type: DataTypes.INTEGER,
@@ -55,3 +41,15 @@ exports.Task = sequelize.define("Task", {
       allowNull: false,
   },
 });
+
+exports.Upload = sequelize.define("Image", {
+    type: {
+      type: DataTypes.STRING,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    data: {
+      type: DataTypes.BLOB("long"),
+    },
+  });
