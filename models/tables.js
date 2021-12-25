@@ -41,3 +41,15 @@ exports.Task = sequelize.define("Task", {
       allowNull: false,
   },
 });
+
+exports.Upload = sequelize.define("Image", {
+    type: {
+      type: DataTypes.STRING,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    data: {
+      type: DataTypes.BLOB("long"),
+    },
+  });

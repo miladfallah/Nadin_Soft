@@ -92,7 +92,7 @@ const {name, priority} = req.body;
                     res.status(400).json({error: err});
                 } else {
                     if (req.file) {
-                        const fileName = `${shortId.generate()}_${
+                        const fileName = `task_${shortId.generate()}_${
                             req.file.originalname
                         }`;
                         await sharp(req.file.buffer)

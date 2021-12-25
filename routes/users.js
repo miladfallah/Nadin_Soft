@@ -35,6 +35,10 @@ router.post("/edit-user/:id", authenticated, userController.editUser);
 // @route   POST /users/delete-user
 router.delete("/delete-user", authenticated, userController.deleteUser);
 
+// @desc   Upload Users Image
+// @route   POST /users/upload-image
+router.post("/upload-image", authenticated, userController.uploadImage);
+
 module.exports = router;
 
 function registerSchema(req, res, next) {
