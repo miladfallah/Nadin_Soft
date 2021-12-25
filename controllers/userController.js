@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+
 const {User} = require("../models/tables");
 const { sendEmail } = require("../utils/mailer");
 
@@ -59,6 +60,7 @@ exports.handleLogin = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
     try {
         // await User.validate(req.body);
+        
         const { fullname, email, password } = req.body;
 
         const user = await User.findOne({ where: {email: req.body.email}});
