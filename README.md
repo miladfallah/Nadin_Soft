@@ -6,7 +6,7 @@
 <br>
 npm i
 <br>
-npm dotenv
+npm i dotenv
 <br>
 node app.js
 <br>
