@@ -6,6 +6,8 @@
 <br>
 npm i
 <br>
+npm dotenv
+<br>
 node app.js
 
 ## اجرای پروژه
