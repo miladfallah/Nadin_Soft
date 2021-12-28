@@ -1,1 +1,3 @@
 edit in config/config.env -->>  DB_PASSWORD = <Your mysql database password>
+DB_USENAME = <Your mysql database username>
+DB_DATABASE = <Your database name for project>
