@@ -5,6 +5,8 @@
 نصب node.js و mysql
 <br>
 npm i
+<br>
+node app.js
 
 ## اجرای پروژه
 اجرای پروژه در لینک زیر:
