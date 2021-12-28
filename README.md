@@ -9,7 +9,8 @@ npm i
 npm dotenv
 <br>
 node app.js
-
+<br>
+سپس با توجه به فایل dotenv.example پروژه را در config.env ادیت میکنیم.
 ## اجرای پروژه
 اجرای پروژه در لینک زیر:
 <br>
