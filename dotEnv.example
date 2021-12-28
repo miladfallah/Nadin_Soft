@@ -1,0 +1,1 @@
+edit in config/config.env -->>  DB_PASSWORD = <Your mysql database password>
